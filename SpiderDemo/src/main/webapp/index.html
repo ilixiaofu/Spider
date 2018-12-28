@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>网络爬虫系统</title>
+    <link rel="stylesheet" href="css/myStyle.css"/>
+    <!--[if lte IE 9]>
+    <script type="text/javascript" src="js/html5shiv.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+    <!--
+        作者：offline
+        时间：2017-11-07
+        描述：导入自定义函数库
+    -->
+    <script type="text/javascript" src="js/myFuntionLib.js"></script>
+</head>
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#submit").click(function () {
+            clear();
+            $("body").append(
+                "<div id='loading'>" +
+                "<div id='loading-info'>加载中...</div>" +
+                "</div>");
+            //向服务器发起请求
+            $.get("spider.do", {
+                    url: $("#input-url").val()
+                },
+                // 请求成功后回调函数
+                function (data, status) {
+                    $("#loading").remove();
+                    if (status == "success") {
+                        getdata(data);
+                    }
+                }, "json");
+        });
+
+        // 获取服务器返回的JSON数据
+        function getdata(data) {
+            if (data.status == 404) {
+                alert(data.msg);
+            }
+            if (data.status == 200) {
+                var parentNode = document.getElementById("section");
+                var ul = document.createElement("ul");
+                parentNode.appendChild(ul);
+
+                var datas = data.datas;
+                for (var index in datas) {
+
+                    var nickname = datas[index].nickname;
+                    var watches = datas[index].watches;
+                    // var imageName = "images/" + datas[index].imageName;
+                    var imageName = datas[index].imageName;
+                    var imageURL = datas[index].imageURL;
+
+                    arrays[index] = imageName; // 存放图片路径
+                    showData(ul, nickname, watches, imageName, imageURL);
+                }
+            }
+            // $("#section").css("height", "100%"); //容器高度调整为自适应
+        }
+
+        var isShowed = false;
+
+        function clear() {
+            if (isShowed) {
+                $("ul").remove();
+                // $("#section").css("height", "100%");
+                arrays = [];
+            }
+            isShowed = true;
+        }
+
+        setInterval(function () {
+            changeColor();
+            changeFontSize();
+            translate();
+        }, 500);
+
+        setInterval(function () {
+            if (arrays.length > 0) {
+                changeBoxImage();
+            }
+        }, 1500);
+
+        setInterval(function () {
+            transRoate();
+        }, 80);
+    })
+</script>
+
+<body>
+<div id="header-back"></div>
+<div id="header-force">
+    <span id="header-force-txt">广告位招商</span>
+</div>
+<div id="container-back"></div>
+<div id="container-force">
+    <div id="form">
+        <label id="input-text" for="input-url">
+            <input type="text" list="url" name="ur" placeholder="请输入URL" id="input-url" required="required" autofocus/>
+        </label>
+        <label id="submit-text">
+            <input type="submit" value="go" id="submit"/>
+        </label>
+        <datalist id="url">
+            <option value="http://www.huya.com/g/2168">http://www.huya.com/g/2168</option>
+            <option value="http://www.huya.com/cache.php"></option>
+            <option value="http://webh.huajiao.com/live/listcategory"></option>
+        </datalist>
+    </div>
+    <div id="section">
+    </div>
+</div>
+<footer>Copyright&copy;</footer>
+<div id="box-3d">
+    <div class="front">
+        <img src="" alt="图片"/>
+    </div>
+    <div class="back">
+        <img src="" alt="图片"/>
+    </div>
+    <div class="left">
+        <img src="" alt="图片"/>
+    </div>
+    <div class="right">
+        <img src="" alt="图片"/>
+    </div>
+    <div class="top">
+        <img src="" alt="图片"/>
+    </div>
+    <div class="bottom">
+        <img src="" alt="图片"/>
+    </div>
+</div>
+</body>
+</html>
